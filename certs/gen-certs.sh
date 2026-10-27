@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e
+umask 077
+cd "$(dirname "$0")"
+
 # AC racine auto-signée : bien marquer qu'elle PEUT signer (contrainte critique)
 openssl req -x509 -new -nodes -newkey rsa:2048 -keyout ca.key -out ca.crt \
 -days 825 -subj "/CN=AC-IoT" -addext "basicConstraints=critical,CA:TRUE"
@@ -12,8 +17,34 @@ openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
 
 
 # Cert CLIENT (un par objet) : CN = identité de l'objet, extendedKeyUsage = clientAuth
-openssl req -new -nodes -newkey rsa:2048 -keyout capteur-salon-01.key \
--out capteur-salon-01.csr -subj "/CN=capteur-salon-01"
+openssl req -new -nodes -newkey rsa:2048 -keyout capteur-bureau-101.key \
+-out capteur-bureau-101.csr -subj "/CN=capteur-bureau-101"
+openssl x509 -req -in capteur-bureau-101.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out capteur-bureau-101.crt -days 825 -extfile client.ext
 
-openssl x509 -req -in capteur-salon-01.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
--out capteur-salon-01.crt -days 825 -extfile client.ext
+
+# Cert CLIENT (un par objet) : CN = identité de l'objet, extendedKeyUsage = clientAuth
+openssl req -new -nodes -newkey rsa:2048 -keyout capteur-bureau-201.key \
+-out capteur-bureau-201.csr -subj "/CN=capteur-bureau-201"
+openssl x509 -req -in capteur-bureau-201.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out capteur-bureau-201.crt -days 825 -extfile client.ext
+
+
+# Cert CLIENT (un par objet) : CN = identité de l'objet, extendedKeyUsage = clientAuth
+openssl req -new -nodes -newkey rsa:2048 -keyout capteur-bureau-301.key \
+-out capteur-bureau-301.csr -subj "/CN=capteur-bureau-301"
+openssl x509 -req -in capteur-bureau-301.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out capteur-bureau-301.crt -days 825 -extfile client.ext
+
+# Cert CLIENT superviseur : CN = identité de l'objet, extendedKeyUsage = clientAuth
+openssl req -new -nodes -newkey rsa:2048 -keyout superviseur.key \
+-out superviseur.csr -subj "/CN=superviseur"
+openssl x509 -req -in superviseur.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out superviseur.crt -days 825 -extfile client.ext
+
+
+# Cert CLIENT intrus : CN = identité de l'objet, extendedKeyUsage = clientAuth
+openssl req -new -nodes -newkey rsa:2048 -keyout intrus.key \
+-out intrus.csr -subj "/CN=intrus"
+openssl x509 -req -in intrus.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out intrus.crt -days 825 -extfile client.ext
