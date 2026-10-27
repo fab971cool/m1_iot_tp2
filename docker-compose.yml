@@ -1,0 +1,35 @@
+services:
+  broker:
+    image: eclipse-mosquitto:2.0.18
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  capteur-101:
+    build: ./capteur
+    environment:
+      SALLE: bureau-101
+    depends_on:
+      - broker
+    restart: on-failure
+
+  capteur-201:
+    build: ./capteur
+    environment:
+      SALLE: bureau-201
+    depends_on:
+      - broker
+    restart: on-failure
+
+  capteur-301:
+    build: ./capteur
+    environment:
+      SALLE: bureau-301
+    depends_on:
+      - broker
+    restart: on-failure
+
+  superviseur:
+    build: ./superviseur
+    depends_on:
+      - broker
+    restart: on-failure
